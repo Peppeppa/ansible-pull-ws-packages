@@ -1,0 +1,57 @@
+---
+#-----------------------------------------------------
+# pre tasks:
+#
+- name: main | "load OS-spezific variables"
+  tags: base,vars
+  ansible.builtin.include_vars:
+    file: "all.yml"
+
+- name: main | "load OS-spezific variables"
+  tags: base,vars
+  ansible.builtin.include_vars:
+    file: "{{ ansible_distribution }}.yml"
+
+- name: main | "load vault variables"
+  tags: base,vars
+  ansible.builtin.include_vars:
+    file: "../../group_vars/vault.yml"
+
+- name: Update and upgrade package packages
+  tags: update
+  package:
+    update_cache: true
+    upgrade: true
+  become: true
+  when: ansible_os_family != "Suse"
+
+- name: Update and upgrade package packages suse
+  tags: update
+  ansible.builtin.zypper:
+    name: "*"
+    state: latest
+    update_cache: true
+  become: true
+  when: ansible_os_family == "Suse"
+
+
+#-----------------------------------------------------
+#   Main
+#
+- block:
+  # software
+  - import_tasks: software/packages_base.yml
+  # create user
+  - import_tasks: user/architect.yml
+  - import_tasks: user/root.yml
+  - import_tasks: user/main_user.yml
+  # system setup
+  - import_tasks: system-setup/ansible_setup.yml
+  - import_tasks: system-setup/clock.yml
+  - import_tasks: system-setup/cron.yml
+  - import_tasks: system-setup/locale.yml
+    when: ansible_os_family != "Suse"
+  - import_tasks: system-setup/logging.yml
+    when: ansible_os_family != "Suse"
+  - import_tasks: system-setup/ssh.yml
+

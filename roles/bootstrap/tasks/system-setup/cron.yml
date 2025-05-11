@@ -1,0 +1,74 @@
+---
+######################################################
+#
+#    install and setup cron  
+#
+######################################################
+# README:
+#
+#
+
+#-----------------------------------------------------
+#   variablen
+#
+#- name: task_name | load variables 
+#  tags: tag1,tag2
+#  set_fact:
+#    CRON_PACKAGE: 
+#    var_2: 
+#    var_3: "{{ beispiel_variable }}"
+#    var_4: 
+
+#-----------------------------------------------------
+#   DEBUG
+#
+#- name: task_name | DEBUG - show loaded variables
+#  tags: tag1,tag2,debug
+#  debug:
+#    msg: 
+#      - "{{ CRON_PACKAGE }}"
+#      - "{{ var_2 }}"
+#      - "{{ var_3 }}"
+#      - "{{ var_4 }}"
+
+
+#-----------------------------------------------------
+#   pre_tasks
+#
+
+
+#-----------------------------------------------------
+#   Main
+#
+
+- name: system setup | cron | install cron package
+  tags: packages,cron,system-setup
+  package:
+    name:
+      - "{{ CRON_PACKAGE }}"
+    state: latest
+
+- name: system setup | cron | start and enable cronie daemon
+  tags: cron,system-setup
+  service:
+    name: cronie
+    state: started
+    enabled: true
+  when: ansible_distribution == "Archlinux"
+
+
+#-----------------------------------------------------
+#   post_tasks
+#
+
+
+#-----------------------------------------------------
+#   Handlers
+#
+
+
+#-----------------------------------------------------
+#   roles
+#
+
+

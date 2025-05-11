@@ -1,0 +1,121 @@
+---
+######################################################
+#
+#    bootstrap main user 
+#
+######################################################
+# README:
+#     Main user for Ansible use
+#
+
+#-----------------------------------------------------
+#   variablen
+#
+#- name: task_name | load variables 
+#  tags: tag1,tag2
+#  set_fact:
+#    MAIN_USER: "{{ ansible_user }}"
+#    SUDO_GROUP: 
+#    MAIN_USER_PASSWD: "{{ beispiel_variable }}"
+#    var_4: 
+
+#-----------------------------------------------------
+#   DEBUG
+#
+- name: task_name | DEBUG - show loaded variables
+  tags: tag1,tag2,debug
+  debug:
+    msg: 
+      - "{{ MAIN_USER }}"
+#      - "{{ SUDO_GROUP }}"
+#      - "{{ MAIN_USER_PASSWD }}"
+#      - "{{ var_4 }}"
+
+
+#-----------------------------------------------------
+#   pre_tasks
+#
+- name: users | main_user | Ensure needed packages are installed
+  tags: packages,users,main_user,bootstrap
+  package:
+    name: 
+      - sudo
+      - "{{ OPENSSH_PACKAGE }}"
+    state: present
+  become: true
+
+#- name: users | main_user | get username
+  #  tags: users,main_user,bootstrap
+  #  ansible.builtin.set_fact:
+  #  MAIN_USER: "{{ ansible_env.USER }}"
+
+#-----------------------------------------------------
+#   Main
+#
+
+- name: users | main_user | ensure home is present
+  tags: users, main_user, bootstrap
+  ansible.builtin.file:
+    path: "/home/{{ MAIN_USER }}"
+    state: directory
+    owner: "{{ MAIN_USER }}"
+    group: "{{ MAIN_USER }}"
+    mode: '0755'
+
+- name: users | main_user | ssh-key
+  tags: users,main_user,bootstrap
+  user:
+    name: "{{ MAIN_USER }}"
+    generate_ssh_key: true
+    ssh_key_type: ed25519
+    ssh_key_comment: "{{ MAIN_USER }}"
+    state: present
+
+#- name: users | main_user | check SSH-key, create it if needed
+  #  tags: users, main_user, bootstrap
+  #ansible.builtin.command:
+    #  cmd: "ssh-keygen -t ed25519 -C '{{ MAIN_USER }}' -f /home/{{ MAIN_USER }}/.ssh/id_ed25519 -N ''"
+    #creates: "/home/{{ MAIN_USER }}/.ssh/id_ed25519"
+
+- name: users | main_user | permissions for .ssh
+  tags: users, main_user, bootstrap
+  ansible.builtin.file:
+    path: "/home/{{ MAIN_USER }}/.ssh"
+    state: directory
+    owner: "{{ MAIN_USER }}"
+    group: "{{ MAIN_USER }}"
+    mode: '0700'
+
+- name: users | main_user | permissions for sshkey
+  tags: users, main_user, bootstrap
+  ansible.builtin.file:
+    path: "/home/{{ MAIN_USER }}/.ssh/id_ed25519"
+    state: file
+    owner: "{{ MAIN_USER }}"
+    group: "{{ MAIN_USER }}"
+    mode: '0600'
+
+- name: users | main_user | "sudoers.d"
+  tags: users,main_user,bootstrap
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers.d/{{ MAIN_USER }}
+    line: "{{ MAIN_USER }} ALL=(ALL) NOPASSWD: ALL"
+    create: true
+    mode: '0440'
+
+
+#-----------------------------------------------------
+#   post_tasks
+#
+
+
+#-----------------------------------------------------
+#   Handlers
+#
+
+
+#-----------------------------------------------------
+#   roles
+#
+
+

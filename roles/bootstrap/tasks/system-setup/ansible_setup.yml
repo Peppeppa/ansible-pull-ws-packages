@@ -1,0 +1,110 @@
+---
+######################################################
+#
+#     Ansible setup
+#
+######################################################
+# README:
+#
+#
+
+#-----------------------------------------------------
+#   variablen
+#
+#- name: task_name | load variables 
+#  tags: tag1,tag2
+#  set_fact:
+#    var_1: 
+#    var_2: 
+#    var_3: "{{ beispiel_variable }}"
+#    var_4: 
+
+#-----------------------------------------------------
+#   DEBUG
+#
+#- name: task_name | DEBUG - show loaded variables
+#  tags: tag1,tag2,debug
+#  debug:
+#    msg: 
+#      - "{{ var_1 }}"
+#      - "{{ var_2 }}"
+#      - "{{ var_3 }}"
+#      - "{{ var_4 }}"
+
+
+#-----------------------------------------------------
+#   pre_tasks
+#
+
+
+#-----------------------------------------------------
+#   Main
+#
+- name: ansible setup | ensure ansible is is the latest version
+  tags: packages,ansible,ansible-setup
+  package:
+    name: ansible
+    state: latest
+
+- name: ansible setup | install required packages
+  tags: packages,ansible,ansible-setup
+  package:
+    name:
+      - "{{ DCONF_PACKAGE }}"
+      - "{{ PYTHON_PSUTIL_PACKAGE }}"
+
+- name: ansible setup | install acl package
+  tags: packages,ansible,ansible-setup
+  package:
+    name: acl
+  when: ansible_distribution in ["Debian", "Pop!_OS", "Ubuntu"]
+
+- name: ansible setup | create ansible log file
+  tags: ansible,ansible-setup,
+  file:
+    path: /var/log/ansible.log
+    owner: "{{ ARCHITECT_USER }}"
+    group: ansible
+    mode: 0664
+    state: touch
+  changed_when: False
+
+- name: Ensure logrotate configuration directory exists
+  file:
+    path: /etc/logrotate.d
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: ansible setup | add logrotate config for ansible log file
+  tags: ansible-setup
+  copy: 
+    src: files/logrotate
+    dest: /etc/logrotate.d/ansible
+    owner: root
+    group: root
+    mode: 0644
+
+- name: ansible setup | remove default ansible directory (/etc/ansible) from host
+  tags: ansible,ansible-setup
+  file: 
+    path: /etc/ansible
+    state: absent
+
+
+#-----------------------------------------------------
+#   post_tasks
+#
+
+
+#-----------------------------------------------------
+#   Handlers
+#
+
+
+#-----------------------------------------------------
+#   roles
+#
+
+

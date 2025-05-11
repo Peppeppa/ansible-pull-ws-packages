@@ -1,0 +1,11 @@
+---
+- name: Bootstrap System
+  hosts: localhost
+  gather_facts: true
+  become: true 
+  vars_files:
+    -../group_vars/all.yml
+  vars: 
+  ansible_user: "{{ lookup('env', 'USER') }}"
+  roles:
+    - bootstrap

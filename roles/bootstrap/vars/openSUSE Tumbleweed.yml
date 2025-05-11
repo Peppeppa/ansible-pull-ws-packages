@@ -1,0 +1,19 @@
+OPENSSH_PACKAGE: openssh-server
+FIREWALL_PACKAGE: firewalld
+PACKAGE_MANAGER: zypper
+UPDATE_COMMAND: "zypper refresh && zypper update -y"
+OPENSSH_SERVICE: sshd
+CRON_PACKAGE: cron
+SUDO_GROUP: wheel
+NFS_CLIENT_PACKAGE: nfs-client
+SFTP_PATH: /usr/lib/ssh/sftp-server
+DCONF_PACKAGE: dconf
+PYTHON_PSUTIL_PACKAGE: python3-psutil
+GITHUB_CLI_PACKAGE: gh
+7ZIP_PACKAGE: p7zip
+PYTHON_FLAKE_PACKAGE: python3-Flake8
+PYTHONPACKAGE: python3
+PYTHON_PIP_PACKAGE: python3-pip
+PYTHON_PYFLAKES_PACKAGE: python3-pyflakes
+PYTHON_VIRTUALENV_PACKAGE: python3-virtualenv
+LOCALE_PACKAGE: glibc-locale

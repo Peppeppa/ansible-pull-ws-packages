@@ -1,0 +1,19 @@
+OPENSSH_PACKAGE: openssh
+FIREWALL_PACKAGE: firewalld
+PACKAGE_MANAGER: pacman
+UPDATE_COMMAND: "pacman -Syu --noconfirm"
+OPENSSH_SERVICE: sshd
+CRON_PACKAGE: cronie
+SUDO_GROUP: wheel
+NFS_CLIENT_PACKAGE: nfs-utils
+SFTP_PATH: /usr/lib/openssh/sftp-server
+DCONF_PACKAGE: dconf
+PYTHON_PSUTIL_PACKAGE: python-psutil
+GITHUB_CLI_PACKAGE: github-cli
+7ZIP_PACKAGE: p7zip
+PYTHON_FLAKE_PACKAGE: python-pyflakes
+PYTHONPACKAGE: python
+PYTHON_PIP_PACKAGE: python-pip
+PYTHON_PYFLAKES_PACKAGE: python-pyflakes
+PYTHON_VIRTUALENV_PACKAGE: python-virtualenv
+LOCALE_PACKAGE: glibc

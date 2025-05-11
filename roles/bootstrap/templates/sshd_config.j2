@@ -1,0 +1,32 @@
+PrintMOTD no
+
+Port {{ SSH_PORT |default(22) }}
+Protocol 2
+
+# Authentication:
+AllowUsers {{ SSH_USER | default("medvidec") }}
+ChallengeResponseAuthentication no
+HostbasedAuthentication no
+LoginGraceTime 120
+PasswordAuthentication {{ PASSWD_AUTH | default("no") }}
+PermitEmptyPasswords no
+PermitRootLogin no
+PubkeyAuthentication yes
+StrictModes yes
+UsePAM yes
+
+# Security
+HostKey /etc/ssh/ssh_host_dsa_key
+HostKey /etc/ssh/ssh_host_ecdsa_key
+HostKey /etc/ssh/ssh_host_ed25519_key
+HostKey /etc/ssh/ssh_host_rsa_key
+IgnoreRhosts yes
+
+# Misc. options
+AcceptEnv LANG LC_*
+TCPKeepAlive yes
+Subsystem sftp {{ SFTP_PATH }}
+
+# Logging
+SyslogFacility AUTH
+LogLevel INFO

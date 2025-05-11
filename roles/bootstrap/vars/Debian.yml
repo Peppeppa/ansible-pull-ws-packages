@@ -1,0 +1,19 @@
+OPENSSH_PACKAGE: openssh-server
+FIREWALL_PACKAGE: ufw
+PACKAGE_MANAGER: apt
+UPDATE_COMMAND: "apt update && apt upgrade -y"
+OPENSSH_SERVICE: ssh
+CRON_PACKAGE: cron
+SUDO_GROUP: sudo
+NFS_CLIENT_PACKAGE: nfs-common
+SFTP_PATH: /usr/lib/openssh/sftp-server
+DCONF_PACKAGE: dconf-cli
+PYTHON_PSUTIL_PACKAGE: python3-psutil
+GITHUB_CLI_PACKAGE: gh
+7ZIP_PACKAGE: p7zip-full
+PYTHON_FLAKE_PACKAGE: python3-pyflake8
+PYTHONPACKAGE: python3
+PYTHON_PIP_PACKAGE: python3-pip
+PYTHON_PYFLAKES_PACKAGE: python3-pyflakes
+PYTHON_VIRTUALENV_PACKAGE: python3-virtualenv
+LOCALE_PACKAGE: locales

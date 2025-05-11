@@ -1,0 +1,110 @@
+---
+######################################################
+#
+#     install and setup locale
+#
+#
+######################################################
+# README:
+#
+#
+
+#-----------------------------------------------------
+#   variablen
+#
+#- name: task_name | load variables 
+#  tags: tag1,tag2
+#  set_fact:
+#    var_1: 
+#    var_2: 
+#    var_3: "{{ beispiel_variable }}"
+#    var_4: 
+
+#-----------------------------------------------------
+#   DEBUG
+#
+#- name: task_name | DEBUG - show loaded variables
+#  tags: tag1,tag2,debug
+#  debug:
+#    msg: 
+#      - "{{ var_1 }}"
+#      - "{{ var_2 }}"
+#      - "{{ var_3 }}"
+#      - "{{ var_4 }}"
+
+
+#-----------------------------------------------------
+#   pre_tasks
+#
+
+
+#-----------------------------------------------------
+#   Main
+#
+- name: system setup | locale | install locale package
+  tags: packages,locale,system-setup
+  package:
+    name: "{{ LOCALE_PACKAGE }}"
+    state: latest
+  when: ansible_os_family != "Suse"
+
+- name: system setup | locale | install locale package
+  tags: packages,locale,system-setup
+  ansible.builtin.zypper:
+    name: "{{ LOCALE_PACKAGE }}"
+    state: latest
+  when: ansible_os_family == "Suse"
+
+- name: system setup | locale | create locale
+  tags: locale,system-setup
+  community.general.locale_gen:
+    name: de_DE.UTF-8
+    state: present
+  when: ansible_os_family != "Suse"
+
+- name: system setup | locale | set system locale
+  tags: locale,system-setup
+  command: localectl set-locale LANG=de_DE.UTF-8
+  when: ansible_os_family == "Suse"
+
+- name: system setup | locale | add de_DE
+  tags: locale,system-setup
+  locale_gen:
+    name: de_DE.UTF-8
+    state: present
+
+- name: system setup | locale | set locale to de_DE
+  tags: locale,system-setup
+  locale_gen:
+    name: de_DE.UTF-8
+    state: present
+  register: locale
+
+- name: system setup | locale | set de_DE as default locale
+  tags: locale,system-setup
+  command: localectl set-locale LANG=de_DE.UTF-8
+  when: locale.changed
+
+- name: system setup | locale | remove en_GB
+  tags: locale,system-setup
+  locale_gen:
+    name: en_GB.UTF-8
+    state: absent
+  when: locale.changed
+
+
+#-----------------------------------------------------
+#   post_tasks
+#
+
+
+#-----------------------------------------------------
+#   Handlers
+#
+
+
+#-----------------------------------------------------
+#   roles
+#
+
+
