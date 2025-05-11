@@ -1,7 +1,5 @@
 ---
-#-----------------------------------------------------
-# pre tasks:
-#
+
 - name: main | "load OS-spezific variables"
   tags: base,vars
   ansible.builtin.include_vars:
@@ -34,24 +32,6 @@
   become: true
   when: ansible_os_family == "Suse"
 
-
-#-----------------------------------------------------
-#   Main
-#
 - block:
   # software
-  - import_tasks: software/packages_base.yml
-  # create user
-  - import_tasks: user/architect.yml
-  - import_tasks: user/root.yml
-  - import_tasks: user/main_user.yml
-  # system setup
-  - import_tasks: system-setup/ansible_setup.yml
-  - import_tasks: system-setup/clock.yml
-  - import_tasks: system-setup/cron.yml
-  - import_tasks: system-setup/locale.yml
-    when: ansible_os_family != "Suse"
-  - import_tasks: system-setup/logging.yml
-    when: ansible_os_family != "Suse"
-  - import_tasks: system-setup/ssh.yml
-
+  - import_tasks: software/user_software.yml

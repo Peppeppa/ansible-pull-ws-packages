@@ -1,0 +1,118 @@
+---
+######################################################
+#
+#        Install Dotfiles from Github
+#
+######################################################
+# README:
+#     Downloads Dotfiles from Git to ~/git/{Reponame}
+#     Uses stow to symlink to ~/
+#
+#     use:  :%s/ to replace "USER_main" with the username
+#           fill in the variables in the set_fact section
+#
+
+#-----------------------------------------------------
+#   Header & variablen
+#
+- name: dotfiles | load variables 
+  tags: dotfiles_main
+  set_fact:
+    USER_DIR: "{{ MAIN_USER_DIR }}"
+    USER: "{{ MAIN_USER }}" 
+    REPO: "{{ MAIN_USER_DOTFILES_REPO }}"
+
+#-----------------------------------------------------
+#   DEBUG
+#
+- name: dotfiles | DEBUG - show loaded variables
+  tags: tag1,debug
+  debug:
+    msg: 
+      - "{{ USER_DIR }}"
+      - "{{ USER }}"
+      - "{{ REPO }}"
+
+
+#-----------------------------------------------------
+#   pre_tasks
+#
+
+- name: dotfiles | USER_main | Ensure required packages are installed
+  tags: dotfiles_main
+  ansible.builtin.package:
+    name:
+      - git
+      - stow
+    state: present
+
+- name: dotfiles | USER_main | Remove existing files before stowing
+  ansible.builtin.file:
+    path: "{{ USER_DIR }}/{{ item }}"
+    state: absent
+  with_items:
+    - .bashrc
+    - .alacritty
+    - .neofetch
+    - .nvim
+    - .tmux
+    - .zsh
+    - git/dotfiles-stow
+    - .bash_profile
+
+#-----------------------------------------------------
+#   Main
+#
+
+- name: dotfiles | USER_main | Create git directory in home folder
+  tags: dotfiles_main
+  ansible.builtin.file:
+    path: "{{ USER_DIR }}/git"
+    state: directory
+    mode: '0755'
+    owner: "{{ USER }}"
+    group: "{{ USER }}"
+
+- name: dotfiles | USER_main | Clone dotfiles REPOsitory
+  tags: dotfiles_main
+  ansible.builtin.git:
+    repo: "{{ REPO }}"
+    dest: '{{ USER_DIR }}/git/dotfiles-stow'
+    update: yes
+
+- name: dotfiles | USER_main | Setze Besitzer und Gruppe für das geklonte Repository
+  tags: dotfiles_main
+  file:
+    path: '{{ USER_DIR }}/git/dotfiles-stow'
+    owner: "{{ USER }}"
+    group: "{{ USER }}"
+    state: directory
+
+- name: dotfiles | USER_main | Setze Besitzer und Gruppe für das geklonte Repository
+  tags: dotfiles_main
+  file:
+    path: '{{ USER_DIR }}/.config'
+    owner: "{{ USER }}"
+    group: "{{ USER }}"
+    state: directory
+
+- name: dotfiles | USER_main | Symlinks für Dotfiles erstellen
+  tags: dotfiles_main
+  command: "stow -d {{ USER_DIR }}/git/dotfiles-stow/ -t {{ USER_DIR }}/ fonts neofetch nvim shell_config yazi ghostty homepage ranger tmux"
+  args:
+    chdir: "{{ USER_DIR }}/git/dotfiles-stow"
+
+
+#-----------------------------------------------------
+#   post_tasks
+#
+
+
+#-----------------------------------------------------
+#   Handlers
+#
+
+
+#-----------------------------------------------------
+#   roles
+#

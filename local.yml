@@ -8,4 +8,6 @@
     - /group_vars/all.yml
     - /group_vars/vault.yml
   roles:
-    - bootstrap
+    - packages
+    - ws-config
+    - hyprland

@@ -1,0 +1,39 @@
+---
+
+- name: main | "load OS-spezific variables"
+  tags: base,vars
+  ansible.builtin.include_vars:
+    file: "all.yml"
+
+- name: main | "load OS-spezific variables"
+  tags: base,vars
+  ansible.builtin.include_vars:
+    file: "{{ ansible_distribution }}.yml"
+
+- name: main | "load vault variables"
+  tags: base,vars
+  ansible.builtin.include_vars:
+    file: "../../group_vars/vault.yml"
+
+- name: Update and upgrade package packages
+  tags: update
+  package:
+    update_cache: true
+    upgrade: true
+  become: true
+  when: ansible_os_family != "Suse"
+
+- name: Update and upgrade package packages suse
+  tags: update
+  ansible.builtin.zypper:
+    name: "*"
+    state: latest
+    update_cache: true
+  become: true
+  when: ansible_os_family == "Suse"
+
+- block:
+  # software
+  - import_tasks: dotfiles/dotfiles_main.yml
+  - import_tasks: software/zsh.yml
+

@@ -1,0 +1,11 @@
+- name: Installiere zsh
+  become: true
+  ansible.builtin.package:
+    name: zsh
+    state: present
+
+- name: Setze zsh als Standardshell für {{ MAIN_USER }}
+  become: true
+  ansible.builtin.user:
+    name: "{{ MAIN_USER }}"
+    shell: /bin/zsh

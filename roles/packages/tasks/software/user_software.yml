@@ -1,7 +1,7 @@
 ---
 ######################################################
 #
-#     setup openssh + hardening
+#     NAME
 #
 ######################################################
 # README:
@@ -9,12 +9,12 @@
 #
 
 #-----------------------------------------------------
-#   variablen
+#   Header & variablen
 #
 #- name: task_name | load variables 
 #  tags: tag1,tag2
 #  set_fact:
-#    SSH_PACKAGE: 
+#    var_1: 
 #    var_2: 
 #    var_3: "{{ beispiel_variable }}"
 #    var_4: 
@@ -26,7 +26,7 @@
 #  tags: tag1,tag2,debug
 #  debug:
 #    msg: 
-#      - "{{ SSH_PACKAGE }}"
+#      - "{{ var_1 }}"
 #      - "{{ var_2 }}"
 #      - "{{ var_3 }}"
 #      - "{{ var_4 }}"
@@ -35,37 +35,38 @@
 #-----------------------------------------------------
 #   pre_tasks
 #
+- name: users | main_user | Update and upgrade package packages
+  tags: update
+  package:
+    update_cache: true
+    upgrade: true
+  become: true
+  when: ansible_os_family != "Suse"
+
+- name: Update and upgrade package packages suse
+  tags: update
+  ansible.builtin.zypper:
+    name: "*"
+    state: latest
+    update_cache: true
+  become: true
+  when: ansible_os_family == "Suse"
 
 
 #-----------------------------------------------------
 #   Main
 #
-- name: system setup | openssh | install or update daemon package
-  tags: packages,ssh,system-setup,settings
+- name: system setup | utilities | install utility packages
+  tags: software,packages,system,update
   package:
-    name: "{{ OPENSSH_PACKAGE }}"
     state: latest
-  notify: restart_ssh
-
-- name: system setup | openssh | generate sshd_config file from template
-  tags: ssh,system-setup,sshdconf
-  template:
-    src: sshd_config.j2
-    dest: /etc/ssh/sshd_config
-    owner: root
-    group: root
-    mode: 0644
-  notify: restart_ssh
-
-- name: system setup | ssh | write pub ssh to authorized keys
-  ansible.builtin.authorized_key:
-    user: "{{ MAIN_USER }}"
-    state: present
-    key: "{{ item }}"
-    path: "/home/{{ MAIN_USER }}/.ssh/authorized_keys"
-  loop:
-    - "{{ PUBSSH_T440P }}"
-    - "{{ PUBSSH_X1CARB }}"
+    name:
+      - eza
+      - starship
+      - ghostty
+      - thunderbird
+  register: package_install
+  when: ansible_os_family != "Suse"
 
 
 #-----------------------------------------------------
@@ -83,3 +84,4 @@
 #
 
 
+ 
